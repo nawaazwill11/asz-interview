@@ -22,16 +22,22 @@ type PostProps = {
 const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
     const { id, userId: postUserId, title, description, image, createdAt, updatedAt } = post
     const [commentCount, setCommentCount] = useState(0)
+    const commentsFromStore = useAppSelector((state) =>
+        state.comments.find((comment) => comment.postId === id)
+    )
     const { userId: currentUserId } = useAppSelector((state) => state.user)
     const dispatch = useDispatch()
 
     useEffect(() => {
+        if (commentsFromStore) setCommentCount(commentsFromStore.comments.length)
+        else {
+            api.loadComments(id).then(({ count, comments }) => {
+                dispatch(setComments({ postId: id, comments }))
+                setCommentCount(count)
+            })
+        }
         // api.loadComments(id).then(({ count }) => setComments(count))
-        api.loadComments(id).then(({ count, comments }) => {
-            dispatch(setComments({ postId: id, comments }))
-            setCommentCount(count)
-        })
-    }, [])
+    }, [commentsFromStore?.comments])
 
     const { Title } = Typography
 
@@ -63,7 +69,9 @@ const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
                             <strong>{commentCount || 0} comments</strong>
                         </Link>
                     </div>
-                    {postUserId === currentUserId && <PostActions actions={actions} />}
+                    {postUserId === currentUserId && (
+                        <PostActions postId={post.id} actions={actions} />
+                    )}
                 </div>
             </Card>
         </div>

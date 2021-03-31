@@ -1,10 +1,11 @@
-import { FunctionComponent, useRef } from 'react'
+import { FunctionComponent, useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
 import { addPost, PostSchema, updatePost } from 'src/store/postSlice'
 import api from 'src/utils/api'
 
 import './PostForm.scss'
-import { Button, Card, Input } from 'antd'
+import { Button, Card } from 'antd'
+import { getUserIdFromStorage } from 'src/utils/snippets'
 
 const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
     id,
@@ -14,7 +15,7 @@ const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
     setPostFormVisible
 }) => {
     const dispatch = useAppDispatch()
-    const { userId } = useAppSelector((state) => state.user)
+    const { userId } = useAppSelector((state) => state.user) || getUserIdFromStorage()
     const imageRef = useRef<any>(null)
     const titleRef = useRef<any>(null)
     const descriptionRef = useRef<any>(null)
@@ -28,6 +29,8 @@ const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
             description: descriptionRef.current?.value || '',
             image: imageRef.current?.value || ''
         }
+        // eslint-disable-next-line no-console
+        console.log(post)
         if (op === 'update') {
             api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
         } else {
@@ -36,34 +39,42 @@ const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
         setPostFormVisible(false)
     }
 
-    const { TextArea } = Input
+    useEffect(() => {
+        if (!userId) {
+            getUserIdFromStorage()
+        }
+    })
+
     return (
         <Card>
             <form className="form">
                 <div className="form-row">
-                    <Input
+                    <input
                         ref={imageRef}
                         type="text"
                         name="image"
+                        className="ant-input"
                         placeholder="https://lorempixel.com/640/480/nightlife"
                         defaultValue={image}
                     />
                 </div>
                 <div className="form-row">
-                    <Input
+                    <input
                         ref={titleRef}
                         type="text"
                         name="title"
+                        className="ant-input"
                         placeholder="Title"
                         defaultValue={title}
                     />
                 </div>
                 <div>
-                    <TextArea
+                    <textarea
                         ref={descriptionRef}
                         name="description"
                         cols={30}
                         rows={5}
+                        className="ant-input"
                         defaultValue={description}
                     />
                 </div>

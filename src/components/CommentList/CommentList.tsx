@@ -1,9 +1,9 @@
-import { Button } from 'antd'
 import { FunctionComponent, useEffect, useState } from 'react'
 import { deleteComment, setComments } from 'src/store/commentSlice'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
 import api from 'src/utils/api'
 import { getFormattedDate } from 'src/utils/snippets'
+import DeleteButtonWithPopOver from '../DeleteButtonWithPopOver/DeleteButtonWithPopOver'
 
 import './CommentList.scss'
 
@@ -47,9 +47,11 @@ const CommentList: FunctionComponent<CommentListProps> = ({ postId }) => {
                 <div className="comment">
                     <p>{comment.commentBody}</p>
                     <div className="comment-bottom">
-                        <Button type="text" onClick={() => handleDeleteClick(comment.id)}>
+                        <DeleteButtonWithPopOver
+                            onButtonClick={() => handleDeleteClick(comment.id)}
+                        >
                             Delete
-                        </Button>
+                        </DeleteButtonWithPopOver>
                         <span>Created: {getFormattedDate(comment.createdAt)}</span>
                     </div>
                 </div>

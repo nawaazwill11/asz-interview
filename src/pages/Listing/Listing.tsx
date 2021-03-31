@@ -5,12 +5,15 @@ import { Button } from 'antd'
 import { deletePost, loadPosts, PostSchema } from 'src/store/postSlice'
 import api from 'src/utils/api'
 import { AppLayout, Post, PostForm } from 'src/components'
-import Auth from 'src/components/Auth/Auth'
 
 import './Listing.scss'
 
 const ListingPage: FunctionComponent = () => {
-    const posts = useAppSelector((state) => state.posts)
+    const posts = useAppSelector((state) => {
+        // eslint-disable-next-line no-console
+        console.log(state)
+        return state.posts
+    })
     const [postFormVisible, setPostFormVisible] = useState(false)
     const [selectedPost, setSelectedPost] = useState<PostSchema>({
         id: '',
@@ -24,14 +27,15 @@ const ListingPage: FunctionComponent = () => {
 
     const dispatch = useAppDispatch()
 
-    const handleEditAction = () => {
+    const handleEditAction = (postId: string) => {
         window.scrollTo(0, 0)
         setPostFormVisible(true)
-        setSelectedPost(selectedPost)
+        const _post = posts.find((post) => post.id === postId)
+        if (_post) setSelectedPost(_post)
     }
 
-    const handleDeleteClick = () => {
-        api.deletePost(selectedPost.id).then((deletedPost) => dispatch(deletePost(deletedPost)))
+    const handleDeleteClick = (postId: string) => {
+        api.deletePost(postId).then((deletedPost) => dispatch(deletePost(deletedPost)))
     }
 
     useEffect(() => {
@@ -42,31 +46,27 @@ const ListingPage: FunctionComponent = () => {
 
     return (
         <AppLayout>
-            <Auth>
-                <div className="listing">
-                    <div className="new-post">
-                        {!postFormVisible && (
-                            <Button
-                                type="text"
-                                onClick={() => setPostFormVisible(!postFormVisible)}
-                            >
-                                + New Post
-                            </Button>
-                        )}
-                    </div>
-                    {postFormVisible ? (
-                        <PostForm {...selectedPost} setPostFormVisible={setPostFormVisible} />
-                    ) : (
-                        ''
+            <div className="listing">
+                <div className="new-post">
+                    {!postFormVisible && (
+                        <Button type="text" onClick={() => setPostFormVisible(!postFormVisible)}>
+                            + New Post
+                        </Button>
                     )}
-                    {posts.slice(0, 10).map((post) => (
-                        <Post
-                            post={post}
-                            actions={{ edit: handleEditAction, delete: handleDeleteClick }}
-                        />
-                    ))}
                 </div>
-            </Auth>
+                {postFormVisible ? (
+                    <PostForm {...selectedPost} setPostFormVisible={setPostFormVisible} />
+                ) : (
+                    ''
+                )}
+                {posts.slice(0, 5).map((post) => (
+                    <Post
+                        key={post.id}
+                        post={post}
+                        actions={{ edit: handleEditAction, delete: handleDeleteClick }}
+                    />
+                ))}
+            </div>
         </AppLayout>
     )
 }

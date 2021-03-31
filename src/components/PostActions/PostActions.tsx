@@ -5,19 +5,20 @@ import DeleteButtonWithPopOver from '../DeleteButtonWithPopOver/DeleteButtonWith
 import './PostActions.scss'
 
 export type PostActionsProps = {
+    postId: string
     actions: {
         edit: any
         delete: any
     }
 }
 
-const PostActions: FunctionComponent<PostActionsProps> = ({ actions }) => {
+const PostActions: FunctionComponent<PostActionsProps> = ({ postId, actions }) => {
     return (
         <div className="post-actions">
-            <Button type="text" onClick={() => actions.edit()}>
+            <Button type="text" onClick={() => actions.edit(postId)}>
                 Edit
             </Button>
-            <DeleteButtonWithPopOver onButtonClick={() => actions.delete()}>
+            <DeleteButtonWithPopOver onButtonClick={() => actions.delete(postId)}>
                 Delete
             </DeleteButtonWithPopOver>
         </div>

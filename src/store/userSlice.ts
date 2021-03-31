@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 const initialState = {
-    userId: '1'
+    userId: ''
 }
 
 const userSlice = createSlice({
