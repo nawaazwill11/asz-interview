@@ -1,4 +1,3 @@
-import toast from 'src/lib/toast'
 import { PostSchema } from 'src/store/postSlice'
 // import { postVar } from 'src/store/states'
 import { CommentSchema } from 'src/types'
@@ -33,7 +32,7 @@ const loadPosts = (): Promise<Array<PostSchema>> => {
             .then((data) => {
                 return resolve(data.items)
             })
-            .catch((error) => reject(toast('error', 'Failed to add new post.')))
+            .catch((error) => reject(error.message))
     )
 }
 
@@ -78,7 +77,9 @@ const loadComments = (postId: string): Promise<{ count: number; comments: Array<
             method: 'GET'
         })
             .then((response) => response.json())
-            .then((data) => resolve({ count: data.count, comments: data.items }))
+            .then((data) => {
+                return resolve({ count: data.count, comments: data.items })
+            })
             .catch((error) => reject(error.message))
     )
 

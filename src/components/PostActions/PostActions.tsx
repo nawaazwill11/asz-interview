@@ -1,4 +1,8 @@
+import { Button } from 'antd'
 import { FunctionComponent } from 'react'
+import DeleteButtonWithPopOver from '../DeleteButtonWithPopOver/DeleteButtonWithPopOver'
+
+import './PostActions.scss'
 
 export type PostActionsProps = {
     actions: {
@@ -9,9 +13,13 @@ export type PostActionsProps = {
 
 const PostActions: FunctionComponent<PostActionsProps> = ({ actions }) => {
     return (
-        <div>
-            <button onClick={() => actions.edit()}>Edit</button>
-            <button onClick={() => actions.delete()}>Delete</button>
+        <div className="post-actions">
+            <Button type="text" onClick={() => actions.edit()}>
+                Edit
+            </Button>
+            <DeleteButtonWithPopOver onButtonClick={() => actions.delete()}>
+                Delete
+            </DeleteButtonWithPopOver>
         </div>
     )
 }

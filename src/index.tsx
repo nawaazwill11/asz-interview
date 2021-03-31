@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import store from './store/store'
 import App from './app/App'
 
-import 'antd/dist/antd.css'
+import './styles/global.scss'
 
 render(
     <StrictMode>
