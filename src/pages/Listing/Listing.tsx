@@ -21,8 +21,6 @@ const defaultPost = {
 
 const ListingPage: FunctionComponent = () => {
     const posts = useAppSelector((state) => {
-        // eslint-disable-next-line no-console
-        console.log(state)
         return state.posts
     })
     const [postFormVisible, setPostFormVisible] = useState(false)
