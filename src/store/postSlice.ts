@@ -11,10 +11,18 @@ export type PostSchema = {
     updatedAt?: string
 }
 
+export type CommentSchema = {
+    id: string
+    postId: string
+    createdAt: string
+    updatedAt: string
+    commentBody: string
+}
+
 const initialState: Array<PostSchema> = []
 
-const listingSlice = createSlice({
-    name: 'Posts',
+const postSlice = createSlice({
+    name: 'Post',
     initialState,
     reducers: {
         addPost(state, action: PayloadAction<PostSchema>) {
@@ -42,6 +50,6 @@ const listingSlice = createSlice({
     }
 })
 
-export const { addPost, loadPosts, updatePost, deletePost } = listingSlice.actions
+export const { addPost, loadPosts, updatePost, deletePost } = postSlice.actions
 
-export default listingSlice.reducer
+export default postSlice.reducer

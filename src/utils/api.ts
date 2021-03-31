@@ -1,5 +1,5 @@
 import toast from 'src/lib/toast'
-import { PostSchema } from 'src/pages/Listing/Listing.slice'
+import { PostSchema } from 'src/store/postSlice'
 // import { postVar } from 'src/store/states'
 import { CommentSchema } from 'src/types'
 import { endpoint } from './config'

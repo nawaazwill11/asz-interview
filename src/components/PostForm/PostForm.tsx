@@ -1,23 +1,37 @@
 import { FunctionComponent, useRef } from 'react'
-import { useAppDispatch } from 'src/app/store'
-import { addPost, PostSchema, updatePost } from 'src/pages/Listing/Listing.slice'
+import { useAppDispatch, useAppSelector } from 'src/store/store'
+import { addPost, PostSchema, updatePost } from 'src/store/postSlice'
 import api from 'src/utils/api'
 
-const PostForm: FunctionComponent<
-    PostSchema & { setSelectedPost: any; setPostFormVisible: any }
-> = ({ id, userId, title, description, image, setSelectedPost, setPostFormVisible }) => {
-    // const post = {
-    //     id,
-    //     userId,
-    //     title,
-    //     description,
-    //     image
-    // }
+const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
+    id,
+    title,
+    description,
+    image,
+    setPostFormVisible
+}) => {
     const dispatch = useAppDispatch()
+    const { userId } = useAppSelector((state) => state.user)
     const imageRef = useRef<HTMLInputElement>(null)
     const titleRef = useRef<HTMLInputElement>(null)
     const descriptionRef = useRef<HTMLTextAreaElement>(null)
     const op = id ? 'update' : 'new'
+
+    const handleUpsertClick = () => {
+        const post = {
+            id,
+            userId,
+            title: titleRef.current?.value || '',
+            description: descriptionRef.current?.value || '',
+            image: imageRef.current?.value || ''
+        }
+        if (op === 'update') {
+            api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
+        } else {
+            api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
+        }
+        setPostFormVisible(false)
+    }
 
     return (
         <form>
@@ -49,24 +63,7 @@ const PostForm: FunctionComponent<
                 />
             </div>
             <div>
-                <button
-                    onClick={() => {
-                        const post = {
-                            id,
-                            title: titleRef.current?.value || '',
-                            description: descriptionRef.current?.value || '',
-                            image: imageRef.current?.value || ''
-                        }
-                        if (op === 'update') {
-                            api.updatePost(post).then((updatedPost) =>
-                                dispatch(updatePost(updatedPost))
-                            )
-                        } else {
-                            api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
-                        }
-                        setPostFormVisible(false)
-                    }}
-                >
+                <button onClick={() => handleUpsertClick()}>
                     {op === 'update' ? 'Update' : 'Save'}
                 </button>
                 <button

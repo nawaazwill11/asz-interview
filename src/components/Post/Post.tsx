@@ -1,32 +1,33 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppDispatch } from 'src/app/store'
-import { deletePost, PostSchema } from 'src/pages/Listing/Listing.slice'
+import { useAppSelector } from 'src/store/store'
+import { PostSchema } from 'src/store/postSlice'
 import api from 'src/utils/api'
 import { getDate } from 'src/utils/snippets'
+import PostActions from '../PostActions/PostActions'
+import { useDispatch } from 'react-redux'
+import { setComments } from 'src/store/commentSlice'
 
-const Post: FunctionComponent<
-    PostSchema & {
-        setSelectedPost: any
-        setPostFormVisible: any
+type PostProps = {
+    post: PostSchema
+    actions: {
+        edit: any
+        delete: any
     }
-> = ({
-    id,
-    userId,
-    title,
-    description,
-    image,
-    createdAt,
-    updatedAt,
-    setPostFormVisible,
-    setSelectedPost
-}) => {
-    const post = { id, userId, title, description, image, createdAt, updatedAt }
-    const [comments, setComments] = useState(0)
-    const dispatch = useAppDispatch()
+}
+
+const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
+    const { id, userId: postUserId, title, description, image, createdAt, updatedAt } = post
+    const [commentCount, setCommentCount] = useState(0)
+    const { userId: currentUserId } = useAppSelector((state) => state.user)
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        api.loadComments(id).then(({ count }) => setComments(count))
+        // api.loadComments(id).then(({ count }) => setComments(count))
+        api.loadComments(id).then(({ count, comments }) => {
+            dispatch(setComments({ postId: id, comments }))
+            setCommentCount(count)
+        })
     }, [])
 
     return (
@@ -53,36 +54,10 @@ const Post: FunctionComponent<
                                 state: post
                             }}
                         >
-                            <strong>{comments} comments</strong>
+                            <strong>{commentCount} comments</strong>
                         </Link>
                     </div>
-                    <div>
-                        <button
-                            onClick={() => {
-                                setPostFormVisible(true)
-                                setSelectedPost({
-                                    id,
-                                    userId,
-                                    title,
-                                    description,
-                                    image,
-                                    createdAt,
-                                    updatedAt
-                                })
-                            }}
-                        >
-                            Edit
-                        </button>
-                        <button
-                            onClick={() => {
-                                api.deletePost(id).then((deletedPost) =>
-                                    dispatch(deletePost(deletedPost))
-                                )
-                            }}
-                        >
-                            Delete
-                        </button>
-                    </div>
+                    {postUserId === currentUserId && <PostActions actions={actions} />}
                 </div>
             </div>
         </div>

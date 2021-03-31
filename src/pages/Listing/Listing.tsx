@@ -1,8 +1,9 @@
 import { FunctionComponent, useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from 'src/app/store'
-import { loadPosts, PostSchema } from './Listing.slice'
-import api from '../../utils/api'
+import { useAppDispatch, useAppSelector } from 'src/store/store'
+import { deletePost, loadPosts, PostSchema } from 'src/store/postSlice'
+import api from 'src/utils/api'
 import { Post, PostForm } from 'src/components'
+import Auth from 'src/components/Auth/Auth'
 
 const ListingPage: FunctionComponent = () => {
     const posts = useAppSelector((state) => state.posts)
@@ -19,6 +20,17 @@ const ListingPage: FunctionComponent = () => {
 
     const dispatch = useAppDispatch()
 
+    const handleEditAction = () => {
+        // SCroll behavior: smooth
+        window.scrollTo(0, 0)
+        setPostFormVisible(true)
+        setSelectedPost(selectedPost)
+    }
+
+    const handleDeleteClick = () => {
+        api.deletePost(selectedPost.id).then((deletedPost) => dispatch(deletePost(deletedPost)))
+    }
+
     useEffect(() => {
         api.loadPosts().then((data) => {
             dispatch(loadPosts(data))
@@ -26,29 +38,28 @@ const ListingPage: FunctionComponent = () => {
     }, [])
 
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                {!postFormVisible && (
-                    <button onClick={() => setPostFormVisible(!postFormVisible)}>+ New Post</button>
+        <Auth>
+            <div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    {!postFormVisible && (
+                        <button onClick={() => setPostFormVisible(!postFormVisible)}>
+                            + New Post
+                        </button>
+                    )}
+                </div>
+                {postFormVisible ? (
+                    <PostForm {...selectedPost} setPostFormVisible={setPostFormVisible} />
+                ) : (
+                    ''
                 )}
+                {posts.slice(0, 10).map((post) => (
+                    <Post
+                        post={post}
+                        actions={{ edit: handleEditAction, delete: handleDeleteClick }}
+                    />
+                ))}
             </div>
-            {postFormVisible ? (
-                <PostForm
-                    {...selectedPost}
-                    setSelectedPost={setSelectedPost}
-                    setPostFormVisible={setPostFormVisible}
-                />
-            ) : (
-                ''
-            )}
-            {posts.slice(0, 10).map((post) => (
-                <Post
-                    {...post}
-                    setSelectedPost={setSelectedPost}
-                    setPostFormVisible={setPostFormVisible}
-                />
-            ))}
-        </div>
+        </Auth>
     )
 }
 
