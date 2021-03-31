@@ -22,21 +22,27 @@ const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
     const op = id ? 'update' : 'new'
 
     const handleUpsertClick = () => {
-        const post = {
-            id,
-            userId,
-            title: titleRef.current?.value || '',
-            description: descriptionRef.current?.value || '',
-            image: imageRef.current?.value || ''
+        if (titleRef.current && descriptionRef.current && imageRef.current) {
+            const post = {
+                id,
+                userId,
+                title: titleRef.current.value,
+                description: descriptionRef.current.value,
+                image: imageRef.current.value
+            }
+
+            if (op === 'update') {
+                api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
+            } else {
+                api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
+            }
+
+            titleRef.current.value = ''
+            descriptionRef.current.value = ''
+            imageRef.current.value = ''
+
+            setPostFormVisible(false)
         }
-        // eslint-disable-next-line no-console
-        console.log(post)
-        if (op === 'update') {
-            api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
-        } else {
-            api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
-        }
-        setPostFormVisible(false)
     }
 
     useEffect(() => {

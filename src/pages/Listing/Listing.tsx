@@ -8,6 +8,16 @@ import { AppLayout, Post, PostForm } from 'src/components'
 
 import './Listing.scss'
 
+const defaultPost = {
+    id: '',
+    userId: '',
+    title: '',
+    description: '',
+    image: '',
+    createdAt: '',
+    updatedAt: ''
+}
+
 const ListingPage: FunctionComponent = () => {
     const posts = useAppSelector((state) => {
         // eslint-disable-next-line no-console
@@ -15,15 +25,7 @@ const ListingPage: FunctionComponent = () => {
         return state.posts
     })
     const [postFormVisible, setPostFormVisible] = useState(false)
-    const [selectedPost, setSelectedPost] = useState<PostSchema>({
-        id: '',
-        userId: '',
-        title: '',
-        description: '',
-        image: '',
-        createdAt: '',
-        updatedAt: ''
-    })
+    const [selectedPost, setSelectedPost] = useState<PostSchema>(defaultPost)
 
     const dispatch = useAppDispatch()
 
@@ -49,7 +51,13 @@ const ListingPage: FunctionComponent = () => {
             <div className="listing">
                 <div className="new-post">
                     {!postFormVisible && (
-                        <Button type="text" onClick={() => setPostFormVisible(!postFormVisible)}>
+                        <Button
+                            type="text"
+                            onClick={() => {
+                                setSelectedPost(defaultPost)
+                                setPostFormVisible(!postFormVisible)
+                            }}
+                        >
                             + New Post
                         </Button>
                     )}

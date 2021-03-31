@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useAppSelector } from 'src/store/store'
 import { PostSchema } from 'src/store/postSlice'
 import api from 'src/utils/api'
@@ -20,6 +20,7 @@ type PostProps = {
 }
 
 const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
+    const [loading, setLoading] = useState(true)
     const { id, userId: postUserId, title, description, image, createdAt, updatedAt } = post
     const [commentCount, setCommentCount] = useState(0)
     const commentsFromStore = useAppSelector((state) =>
@@ -27,13 +28,18 @@ const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
     )
     const { userId: currentUserId } = useAppSelector((state) => state.user)
     const dispatch = useDispatch()
+    const history = useHistory()
+    const postPath = `/post/${id}`
 
     useEffect(() => {
-        if (commentsFromStore) setCommentCount(commentsFromStore.comments.length)
-        else {
+        if (commentsFromStore) {
+            setCommentCount(commentsFromStore.comments.length)
+            setLoading(false)
+        } else {
             api.loadComments(id).then(({ count, comments }) => {
                 dispatch(setComments({ postId: id, comments }))
                 setCommentCount(count)
+                setLoading(false)
             })
         }
         // api.loadComments(id).then(({ count }) => setComments(count))
@@ -43,7 +49,7 @@ const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
 
     return (
         <div className="post">
-            <Card>
+            <Card loading={loading} hoverable onClick={() => history.push(postPath)}>
                 <div className="image" style={{ backgroundImage: `url(${image})` }} />
                 <div>
                     <Title level={4}>{title}</Title>
@@ -56,13 +62,13 @@ const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
                     </p>
                 </div>
                 <div>
-                    <p>{description}</p>
+                    <p style={{ fontSize: '1rem' }}>{description}</p>
                 </div>
                 <div className="post-interaction">
                     <div>
                         <Link
                             to={{
-                                pathname: `/post/${id}`,
+                                pathname: postPath,
                                 state: post
                             }}
                         >
