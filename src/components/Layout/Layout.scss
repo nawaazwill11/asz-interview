@@ -42,3 +42,19 @@ footer {
     text-align: center;
     border-top: 1px solid lightgrey;
 }
+
+@media screen and (max-width: 576px) {
+    header {
+        height: auto !important;
+        h1 {
+            font-size: 1.2rem;
+        }
+        .content {
+            flex-direction: column;
+            padding-bottom: 1rem;
+        }
+    }
+    .container {
+        padding: 0 0.5rem;
+    }
+}
