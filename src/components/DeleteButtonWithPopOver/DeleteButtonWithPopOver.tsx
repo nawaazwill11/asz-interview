@@ -18,14 +18,21 @@ const DeleteButtonWithPopOver: FunctionComponent<DeleteButtonWithPopOverProps> =
                     <Button
                         type="text"
                         danger
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation()
                             onButtonClick()
                             setVisible(false)
                         }}
                     >
                         Delete
                     </Button>
-                    <Button type="text" onClick={() => setVisible(false)}>
+                    <Button
+                        type="text"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setVisible(false)
+                        }}
+                    >
                         Cancel
                     </Button>
                 </div>

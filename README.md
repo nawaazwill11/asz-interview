@@ -2,6 +2,11 @@
 
 Run `yarn && yarn start`
 
+### Important
+
+The post loading is capped to 10 posts. This can be altered by adjusting the `POST_CAP` variable location in the `src/app/config.ts` file.
+If the cap is removed, the server sends a **429 - Too many requests** error.
+
 The app works as mentioned in the requirements.
 There are possible differences between the UI being developed and the one in the given.
 

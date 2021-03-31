@@ -7,6 +7,7 @@ import api from 'src/utils/api'
 import { AppLayout, Post, PostForm } from 'src/components'
 
 import './Listing.scss'
+import { POST_CAP } from 'src/app/config'
 
 const defaultPost = {
     id: '',
@@ -67,7 +68,7 @@ const ListingPage: FunctionComponent = () => {
                 ) : (
                     ''
                 )}
-                {posts.slice(0, 5).map((post) => (
+                {posts.slice(0, POST_CAP).map((post) => (
                     <Post
                         key={post.id}
                         post={post}

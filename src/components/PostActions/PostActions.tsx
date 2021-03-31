@@ -14,11 +14,21 @@ export type PostActionsProps = {
 
 const PostActions: FunctionComponent<PostActionsProps> = ({ postId, actions }) => {
     return (
-        <div className="post-actions">
-            <Button type="text" onClick={() => actions.edit(postId)}>
+        <div className="post-actions" onClick={(e) => e.stopPropagation()}>
+            <Button
+                type="text"
+                onClick={(e) => {
+                    e.preventDefault()
+                    actions.edit(postId)
+                }}
+            >
                 Edit
             </Button>
-            <DeleteButtonWithPopOver onButtonClick={() => actions.delete(postId)}>
+            <DeleteButtonWithPopOver
+                onButtonClick={() => {
+                    actions.delete(postId)
+                }}
+            >
                 Delete
             </DeleteButtonWithPopOver>
         </div>

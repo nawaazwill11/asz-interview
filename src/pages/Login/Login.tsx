@@ -1,3 +1,4 @@
+import { Button, Card } from 'antd'
 import { FunctionComponent, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router'
 import { useAppDispatch } from 'src/store/store'
@@ -44,16 +45,29 @@ const Login: FunctionComponent = () => {
                 alignItems: 'center'
             }}
         >
-            <div style={{ width: '200px', textAlign: 'center' }}>
-                <input
-                    ref={userRef}
-                    type="text"
-                    placeholder="Enter user id"
-                    style={{ width: '100%' }}
-                    onChange={() => handleInputChange()}
-                />
-                <span ref={errorRef} />
-                <button onClick={() => handleLoginClick()}>Login</button>
+            <div className="login-form">
+                <Card hoverable>
+                    <div className="user-id">
+                        <input
+                            ref={userRef}
+                            type="text"
+                            placeholder="Enter user id"
+                            style={{ width: '100%' }}
+                            onChange={() => handleInputChange()}
+                            className="ant-input"
+                        />
+                    </div>
+                    <div className="error">
+                        <span ref={errorRef} />
+                    </div>
+                    <Button
+                        type="primary"
+                        className="login-button"
+                        onClick={() => handleLoginClick()}
+                    >
+                        Login
+                    </Button>
+                </Card>
             </div>
         </div>
     )

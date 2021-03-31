@@ -1,12 +1,23 @@
+import { API_BASE } from 'src/app/config'
 import { PostSchema } from 'src/store/postSlice'
-// import { postVar } from 'src/store/states'
 import { CommentSchema } from 'src/types'
-import { endpoint } from './config'
-// import { useApolloState } from './hooks'
 
-// const endpoint = (postId: string, commentId: string) => {
-//     return `${API_BASE}/posts${postId && `/${postId}`}${commentId && `/${commentId}`}`
-// }
+export const endpoint = {
+    post: {
+        get: (): string => `${API_BASE}/posts`,
+        post: (): string => `${API_BASE}/posts`,
+        put: (postId: string): string => `${API_BASE}/posts/${postId}`,
+        delete: (postId: string): string => `${API_BASE}/posts/${postId}`
+    },
+    comment: {
+        get: (postId: string): string => `${API_BASE}/posts/${postId}/comments`,
+        post: (postId: string): string => `${API_BASE}/posts/${postId}/comments`,
+        put: (postId: string, commentId: string): string =>
+            `${API_BASE}/posts/${postId}/comments/${commentId}`,
+        delete: (postId: string, commentId: string): string =>
+            `${API_BASE}/posts/${postId}/comments/${commentId}`
+    }
+}
 
 type RequestSchema = {
     url: string
