@@ -1,4 +1,4 @@
-import { userIdLocalStorageKey } from './config'
+import { userIdLocalStorageKey } from '../app/config'
 
 export const getDate = (dateString: any) => new Date(dateString)
 export const getFormattedDate = (dateString: any) => {
