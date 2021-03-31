@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CommentSchema } from 'src/types'
+
+export type CommentSchema = {
+    id: string
+    postId: string
+    createdAt: string
+    updatedAt: string
+    commentBody: string
+}
 
 const initialState: Array<{
     postId: string

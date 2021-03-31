@@ -1,19 +1,12 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 import { deleteComment, setComments } from 'src/store/commentSlice'
+import { CommentSchema } from 'src/store/postSlice'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
 import api from 'src/utils/api'
 import { getFormattedDate } from 'src/utils/snippets'
 import DeleteButtonWithPopOver from '../DeleteButtonWithPopOver/DeleteButtonWithPopOver'
 
 import './CommentList.scss'
-
-export type CommentSchema = {
-    id: string
-    postId: string
-    createdAt: string
-    updatedAt: string
-    commentBody: string
-}
 
 type CommentListProps = {
     postId: string

@@ -1,6 +1,6 @@
 import { API_BASE } from 'src/app/config'
 import { PostSchema } from 'src/store/postSlice'
-import { CommentSchema } from 'src/types'
+import { CommentSchema } from 'src/store/commentSlice'
 
 export const endpoint = {
     post: {
