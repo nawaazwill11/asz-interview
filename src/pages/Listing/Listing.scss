@@ -1,0 +1,11 @@
+.listing {
+    .new-post {
+        display: flex;
+        justify-content: flex-end;
+        padding-bottom: 1rem;
+
+        button {
+            font-size: 1.15rem;
+        }
+    }
+}

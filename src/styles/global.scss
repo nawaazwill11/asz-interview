@@ -1,0 +1,16 @@
+@import './normalize.css';
+@import 'antd/dist/antd.css';
+@import './antd-override.scss';
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+a {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+footer {
+    background-color: lightgray;
+}

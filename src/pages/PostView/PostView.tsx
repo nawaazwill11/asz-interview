@@ -1,12 +1,15 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
-import { CommentAdder, CommentList, Post, PostForm } from 'src/components'
+import { AppLayout, CommentAdder, CommentList, Post, PostForm } from 'src/components'
 import { PostSchema } from 'src/types'
 import api from 'src/utils/api'
 import { deletePost } from 'src/store/postSlice'
 import { getUserIdFromStorage } from 'src/utils/snippets'
 import { setUser } from 'src/store/userSlice'
+// import Auth from 'src/components/Auth/Auth'
+import { Link } from 'react-router-dom'
+import { ArrowLeftOutlined } from '@ant-design/icons'
 
 const PostView: FunctionComponent<PostSchema> = () => {
     // check state of location first to get post and comment value
@@ -17,7 +20,7 @@ const PostView: FunctionComponent<PostSchema> = () => {
     )
 
     const [post, setPost] = useState<PostSchema>({
-        id: '',
+        id,
         userId,
         title: '',
         description: '',
@@ -45,19 +48,31 @@ const PostView: FunctionComponent<PostSchema> = () => {
 
     const handleEditClick = () => setPostFormVisible(true)
 
-    const handleDeleteClick = () =>
-        api.deletePost(id).then((deletedPost) => {
+    const handleDeleteClick = (postId: string) =>
+        api.deletePost(postId).then((deletedPost) => {
             dispatch(deletePost(deletedPost))
             history.push('/')
         })
 
     return (
-        <div>
-            {postFormvisible ? <PostForm {...post} setPostFormVisible={setPostFormVisible} /> : ''}
-            <Post post={post} actions={{ edit: handleEditClick, delete: handleDeleteClick }} />
-            <CommentAdder postId={id} />
-            <CommentList postId={id} />
-        </div>
+        <AppLayout>
+            <div>
+                <div>
+                    <Link to="/">
+                        <ArrowLeftOutlined />
+                        <span style={{ marginLeft: '0.25rem' }}>Back</span>
+                    </Link>
+                </div>
+                {postFormvisible ? (
+                    <PostForm {...post} setPostFormVisible={setPostFormVisible} />
+                ) : (
+                    ''
+                )}
+                <Post post={post} actions={{ edit: handleEditClick, delete: handleDeleteClick }} />
+                <CommentAdder postId={id} />
+                <CommentList postId={id} />
+            </div>
+        </AppLayout>
     )
 }
 

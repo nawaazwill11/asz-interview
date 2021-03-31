@@ -1,0 +1,25 @@
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+
+    .comment {
+        background-color: white;
+        border: 1px solid lightgray;
+        border-radius: 10px;
+        padding: 1rem;
+        padding-bottom: 0.5rem;
+
+        button {
+            padding-left: 0;
+        }
+    }
+
+    .comment-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid lightgray;
+    }
+}

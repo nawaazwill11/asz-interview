@@ -1,7 +1,11 @@
-import { FunctionComponent, useRef } from 'react'
+import { FunctionComponent, useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
 import { addPost, PostSchema, updatePost } from 'src/store/postSlice'
 import api from 'src/utils/api'
+
+import './PostForm.scss'
+import { Button, Card } from 'antd'
+import { getUserIdFromStorage } from 'src/utils/snippets'
 
 const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
     id,
@@ -11,70 +15,90 @@ const PostForm: FunctionComponent<PostSchema & { setPostFormVisible: any }> = ({
     setPostFormVisible
 }) => {
     const dispatch = useAppDispatch()
-    const { userId } = useAppSelector((state) => state.user)
-    const imageRef = useRef<HTMLInputElement>(null)
-    const titleRef = useRef<HTMLInputElement>(null)
-    const descriptionRef = useRef<HTMLTextAreaElement>(null)
+    const { userId } = useAppSelector((state) => state.user) || getUserIdFromStorage()
+    const imageRef = useRef<any>(null)
+    const titleRef = useRef<any>(null)
+    const descriptionRef = useRef<any>(null)
     const op = id ? 'update' : 'new'
 
     const handleUpsertClick = () => {
-        const post = {
-            id,
-            userId,
-            title: titleRef.current?.value || '',
-            description: descriptionRef.current?.value || '',
-            image: imageRef.current?.value || ''
+        if (titleRef.current && descriptionRef.current && imageRef.current) {
+            const post = {
+                id,
+                userId,
+                title: titleRef.current.value,
+                description: descriptionRef.current.value,
+                image: imageRef.current.value
+            }
+
+            if (op === 'update') {
+                api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
+            } else {
+                api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
+            }
+
+            titleRef.current.value = ''
+            descriptionRef.current.value = ''
+            imageRef.current.value = ''
+
+            setPostFormVisible(false)
         }
-        if (op === 'update') {
-            api.updatePost(post).then((updatedPost) => dispatch(updatePost(updatedPost)))
-        } else {
-            api.addPost(post).then((newPost) => dispatch(addPost(newPost)))
-        }
-        setPostFormVisible(false)
     }
 
+    useEffect(() => {
+        if (!userId) {
+            getUserIdFromStorage()
+        }
+    })
+
     return (
-        <form>
-            <div>
-                <input
-                    ref={imageRef}
-                    type="text"
-                    name="image"
-                    placeholder="https://lorempixel.com/640/480/nightlife"
-                    defaultValue={image}
-                />
-            </div>
-            <div>
-                <input
-                    ref={titleRef}
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    defaultValue={title}
-                />
-            </div>
-            <div>
-                <textarea
-                    ref={descriptionRef}
-                    name="description"
-                    cols={30}
-                    rows={10}
-                    defaultValue={description}
-                />
-            </div>
-            <div>
-                <button onClick={() => handleUpsertClick()}>
-                    {op === 'update' ? 'Update' : 'Save'}
-                </button>
-                <button
-                    onClick={() => {
-                        setPostFormVisible(false)
-                    }}
-                >
-                    Cancel
-                </button>
-            </div>
-        </form>
+        <Card>
+            <form className="form">
+                <div className="form-row">
+                    <input
+                        ref={imageRef}
+                        type="text"
+                        name="image"
+                        className="ant-input"
+                        placeholder="https://lorempixel.com/640/480/nightlife"
+                        defaultValue={image}
+                    />
+                </div>
+                <div className="form-row">
+                    <input
+                        ref={titleRef}
+                        type="text"
+                        name="title"
+                        className="ant-input"
+                        placeholder="Title"
+                        defaultValue={title}
+                    />
+                </div>
+                <div>
+                    <textarea
+                        ref={descriptionRef}
+                        name="description"
+                        cols={30}
+                        rows={5}
+                        className="ant-input"
+                        defaultValue={description}
+                    />
+                </div>
+                <div className="form-actions">
+                    <Button type="text" onClick={() => handleUpsertClick()}>
+                        {op === 'update' ? 'Update' : 'Save'}
+                    </Button>
+                    <Button
+                        type="text"
+                        onClick={() => {
+                            setPostFormVisible(false)
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </form>
+        </Card>
     )
 }
 

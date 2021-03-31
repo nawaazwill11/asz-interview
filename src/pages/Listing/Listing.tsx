@@ -1,34 +1,43 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
+import { Button } from 'antd'
+
 import { deletePost, loadPosts, PostSchema } from 'src/store/postSlice'
 import api from 'src/utils/api'
-import { Post, PostForm } from 'src/components'
-import Auth from 'src/components/Auth/Auth'
+import { AppLayout, Post, PostForm } from 'src/components'
+
+import './Listing.scss'
+
+const defaultPost = {
+    id: '',
+    userId: '',
+    title: '',
+    description: '',
+    image: '',
+    createdAt: '',
+    updatedAt: ''
+}
 
 const ListingPage: FunctionComponent = () => {
-    const posts = useAppSelector((state) => state.posts)
-    const [postFormVisible, setPostFormVisible] = useState(false)
-    const [selectedPost, setSelectedPost] = useState<PostSchema>({
-        id: '',
-        userId: '',
-        title: '',
-        description: '',
-        image: '',
-        createdAt: '',
-        updatedAt: ''
+    const posts = useAppSelector((state) => {
+        // eslint-disable-next-line no-console
+        console.log(state)
+        return state.posts
     })
+    const [postFormVisible, setPostFormVisible] = useState(false)
+    const [selectedPost, setSelectedPost] = useState<PostSchema>(defaultPost)
 
     const dispatch = useAppDispatch()
 
-    const handleEditAction = () => {
-        // SCroll behavior: smooth
+    const handleEditAction = (postId: string) => {
         window.scrollTo(0, 0)
         setPostFormVisible(true)
-        setSelectedPost(selectedPost)
+        const _post = posts.find((post) => post.id === postId)
+        if (_post) setSelectedPost(_post)
     }
 
-    const handleDeleteClick = () => {
-        api.deletePost(selectedPost.id).then((deletedPost) => dispatch(deletePost(deletedPost)))
+    const handleDeleteClick = (postId: string) => {
+        api.deletePost(postId).then((deletedPost) => dispatch(deletePost(deletedPost)))
     }
 
     useEffect(() => {
@@ -38,13 +47,19 @@ const ListingPage: FunctionComponent = () => {
     }, [])
 
     return (
-        <Auth>
-            <div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <AppLayout>
+            <div className="listing">
+                <div className="new-post">
                     {!postFormVisible && (
-                        <button onClick={() => setPostFormVisible(!postFormVisible)}>
+                        <Button
+                            type="text"
+                            onClick={() => {
+                                setSelectedPost(defaultPost)
+                                setPostFormVisible(!postFormVisible)
+                            }}
+                        >
                             + New Post
-                        </button>
+                        </Button>
                     )}
                 </div>
                 {postFormVisible ? (
@@ -52,14 +67,15 @@ const ListingPage: FunctionComponent = () => {
                 ) : (
                     ''
                 )}
-                {posts.slice(0, 10).map((post) => (
+                {posts.slice(0, 5).map((post) => (
                     <Post
+                        key={post.id}
                         post={post}
                         actions={{ edit: handleEditAction, delete: handleDeleteClick }}
                     />
                 ))}
             </div>
-        </Auth>
+        </AppLayout>
     )
 }
 

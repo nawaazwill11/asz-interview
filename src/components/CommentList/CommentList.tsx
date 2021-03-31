@@ -1,8 +1,19 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 import { deleteComment, setComments } from 'src/store/commentSlice'
 import { useAppDispatch, useAppSelector } from 'src/store/store'
-import { CommentSchema } from 'src/types'
 import api from 'src/utils/api'
+import { getFormattedDate } from 'src/utils/snippets'
+import DeleteButtonWithPopOver from '../DeleteButtonWithPopOver/DeleteButtonWithPopOver'
+
+import './CommentList.scss'
+
+export type CommentSchema = {
+    id: string
+    postId: string
+    createdAt: string
+    updatedAt: string
+    commentBody: string
+}
 
 type CommentListProps = {
     postId: string
@@ -30,11 +41,19 @@ const CommentList: FunctionComponent<CommentListProps> = ({ postId }) => {
         })
 
     return (
-        <div>
+        <div className="comments">
+            <strong>Comments ({comments.length})</strong>
             {comments.map((comment) => (
-                <div>
+                <div className="comment">
                     <p>{comment.commentBody}</p>
-                    <button onClick={() => handleDeleteClick(comment.id)}>Delete</button>
+                    <div className="comment-bottom">
+                        <DeleteButtonWithPopOver
+                            onButtonClick={() => handleDeleteClick(comment.id)}
+                        >
+                            Delete
+                        </DeleteButtonWithPopOver>
+                        <span>Created: {getFormattedDate(comment.createdAt)}</span>
+                    </div>
                 </div>
             ))}
         </div>

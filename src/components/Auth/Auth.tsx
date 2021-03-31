@@ -2,7 +2,7 @@ import { FunctionComponent, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { getUserIdFromStorage, setUserIdToStorage, validUserId } from 'src/utils/snippets'
 
-const Auth: FunctionComponent = ({ children }) => {
+function Auth<Props>(Component: FunctionComponent<Props>): FunctionComponent<Props> {
     const [userId, setUserId] = useState('')
     const history = useHistory()
 
@@ -16,7 +16,9 @@ const Auth: FunctionComponent = ({ children }) => {
         }
     }, [])
 
-    return <>{userId ? children : ''}</>
+    return userId ? Component : EmptyFC
 }
+
+const EmptyFC: FunctionComponent = () => <></>
 
 export default Auth

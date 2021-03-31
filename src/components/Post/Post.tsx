@@ -1,12 +1,15 @@
 import { FunctionComponent, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useAppSelector } from 'src/store/store'
 import { PostSchema } from 'src/store/postSlice'
 import api from 'src/utils/api'
-import { getDate } from 'src/utils/snippets'
+import { getFormattedDate } from 'src/utils/snippets'
 import PostActions from '../PostActions/PostActions'
 import { useDispatch } from 'react-redux'
 import { setComments } from 'src/store/commentSlice'
+
+import './Post.scss'
+import { Card, Typography } from 'antd'
 
 type PostProps = {
     post: PostSchema
@@ -17,49 +20,66 @@ type PostProps = {
 }
 
 const Post: FunctionComponent<PostProps> = ({ post, actions }) => {
+    const [loading, setLoading] = useState(true)
     const { id, userId: postUserId, title, description, image, createdAt, updatedAt } = post
     const [commentCount, setCommentCount] = useState(0)
+    const commentsFromStore = useAppSelector((state) =>
+        state.comments.find((comment) => comment.postId === id)
+    )
     const { userId: currentUserId } = useAppSelector((state) => state.user)
     const dispatch = useDispatch()
+    const history = useHistory()
+    const postPath = `/post/${id}`
 
     useEffect(() => {
+        if (commentsFromStore) {
+            setCommentCount(commentsFromStore.comments.length)
+            setLoading(false)
+        } else {
+            api.loadComments(id).then(({ count, comments }) => {
+                dispatch(setComments({ postId: id, comments }))
+                setCommentCount(count)
+                setLoading(false)
+            })
+        }
         // api.loadComments(id).then(({ count }) => setComments(count))
-        api.loadComments(id).then(({ count, comments }) => {
-            dispatch(setComments({ postId: id, comments }))
-            setCommentCount(count)
-        })
-    }, [])
+    }, [commentsFromStore?.comments])
+
+    const { Title } = Typography
 
     return (
-        <div style={{ boxShadow: '0px 0px 0px 1px black' }}>
-            <div style={{ width: '100%' }}>
-                <div style={{ width: '100%', height: '100px', backgroundImage: image }} />
+        <div className="post">
+            <Card loading={loading} hoverable onClick={() => history.push(postPath)}>
+                <div className="image" style={{ backgroundImage: `url(${image})` }} />
                 <div>
-                    <strong>{title}</strong>
+                    <Title level={4}>{title}</Title>
                 </div>
                 <div>
-                    Created at <span>{getDate(createdAt).toUTCString()}</span>
+                    <p>
+                        Created: <span>{getFormattedDate(createdAt)}</span>
+                        <br />
+                        Last Updated: <span>{getFormattedDate(updatedAt)}</span>
+                    </p>
                 </div>
                 <div>
-                    Last Updated at <span>{getDate(updatedAt).toUTCString()}</span>
+                    <p style={{ fontSize: '1rem' }}>{description}</p>
                 </div>
-                <div>
-                    <p>{description}</p>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="post-interaction">
                     <div>
                         <Link
                             to={{
-                                pathname: `/post/${id}`,
+                                pathname: postPath,
                                 state: post
                             }}
                         >
-                            <strong>{commentCount} comments</strong>
+                            <strong>{commentCount || 0} comments</strong>
                         </Link>
                     </div>
-                    {postUserId === currentUserId && <PostActions actions={actions} />}
+                    {postUserId === currentUserId && (
+                        <PostActions postId={post.id} actions={actions} />
+                    )}
                 </div>
-            </div>
+            </Card>
         </div>
     )
 }
